@@ -8,7 +8,6 @@ triple = lambda x: 3 * x
 
 increment = lambda x: x + 1
 
-
 HW_SOURCE_FILE = __file__
 
 
@@ -31,7 +30,10 @@ def product(n, term):
     >>> product(3, triple)    # 1*3 * 2*3 * 3*3
     162
     """
-    "*** YOUR CODE HERE ***"
+    production = 1
+    for i in range(1, n + 1):
+        production *= term(i)
+    return production
 
 
 def square(x):
@@ -62,7 +64,9 @@ def accumulate(merger, base, n, term):
     >>> accumulate(lambda x, y: (x + y) % 17, 19, 20, square)
     16
     """
-    "*** YOUR CODE HERE ***"
+    for i in range(1, n + 1):
+        base = merger(term(i), base)
+    return base
 
 
 def summation_using_accumulate(n, term):
@@ -73,7 +77,7 @@ def summation_using_accumulate(n, term):
     >>> summation_using_accumulate(5, triple)
     45
     """
-    "*** YOUR CODE HERE ***"
+    return accumulate(add, 0, n, term)
 
 
 def product_using_accumulate(n, term):
@@ -84,7 +88,7 @@ def product_using_accumulate(n, term):
     >>> product_using_accumulate(6, triple)
     524880
     """
-    "*** YOUR CODE HERE ***"
+    return accumulate(mul, 1, n, term)
 
 
 def accumulate_syntax_check():
