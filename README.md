@@ -1,4 +1,4 @@
-# cs61a-fa21
+# cs61a_fa21
 
 tips: Add this function into Linux shell's `.*rc` file to locally run Ok autograder without add `--local` behind each
 command that parsed from website:

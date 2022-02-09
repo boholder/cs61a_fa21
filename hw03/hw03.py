@@ -152,10 +152,95 @@ def descending_coin(coin):
         return 1
 
 
+def count_coins_without_optimal(change):
+    """Return the number of ways to make change using coins of value of 1, 5, 10, 25.
+    没有优化。（求组合数）
+    比例题再复杂一点，需要辅助函数来决定下一个可选步数。
+    http://composingprograms.com/pages/17-recursive-functions.html
+    和教材最后的例题思路相同，对于每次迭代，结果由两部分组成：
+    (划分n, 直到{下一个可选的步数}步数) 加上 (划分n-m, 直到m步数)
+
+    这个{下一个步数}在1~k问题里是k-1，在这个硬币问题里是descending_coin(coin)。
+
+    >>> count_coins_without_optimal(5)
+    2
+    >>> count_coins_without_optimal(10)
+    4
+    >>> count_coins_without_optimal(15)
+    6
+    >>> count_coins_without_optimal(20)
+    9
+    >>> count_coins_without_optimal(100) # How many ways to make change for a dollar?
+    242
+    >>> count_coins_without_optimal(200)
+    1463
+    """
+
+    def rec(n, coin):
+        # （上次传来的下一面值）没有下一个面值了
+        if coin is None:
+            return 0
+        # 正好分完，算一种情况
+        elif n == 0:
+            return 1
+        # 上一次传来的 n - coin是负数
+        elif n < 0:
+            return 0
+        else:
+            return rec(n - coin, coin) + rec(n, descending_coin(coin))
+
+    return rec(change, 25)
+
+
+def count_coins_with_tail_recursion(change):
+    """Return the number of ways to make change using coins of value of 1, 5, 10, 25.
+    引入尾递归优化。
+    在非树型递归中，迭代只有一个发展方向，不存在这个问题。
+    在树型递归中，下一次调用的迭代是什么含义？
+
+    根据上面没优化的实现，在这类划分（求组合数）的问题中，
+    总是能把多个子树（选择）调整为两个子树（选择），因此在尾递归中：
+
+    下一次迭代代表 (划分n, 直到{下一个可选的步数}步数)，
+    而传入的count参数则加上了 (划分n-m, 直到m步数) 的结果，
+    反过来也对。
+
+    >>> count_coins_with_tail_recursion(5)
+    2
+    >>> count_coins_with_tail_recursion(10)
+    4
+    >>> count_coins_with_tail_recursion(15)
+    6
+    >>> count_coins_with_tail_recursion(20)
+    9
+    >>> count_coins_with_tail_recursion(100) # How many ways to make change for a dollar?
+    242
+    >>> count_coins_with_tail_recursion(200)
+    1463
+    """
+
+    def rec(n, coin, count=0):
+        # （上次传来的下一面值）没有下一个面值了
+        if coin is None:
+            return count  # (+ 0)
+        # 正好分完，算一种情况
+        elif n == 0:
+            return 1 + count
+        # 上一次传来的 n - coin是负数
+        elif n < 0:
+            return count  # (+ 0)
+        else:
+            # 两个选择可以前后调换
+            # return rec(n, descending_coin(coin), count + rec(n - coin, coin))
+            return rec(n - coin, coin, count + rec(n, descending_coin(coin)))
+
+    return rec(change, 25)
+
+
 def count_coins(change):
     """Return the number of ways to make change using coins of value of 1, 5, 10, 25.
-
-    思路：
+    这种划分问题是求组合，走格子问题求排列。
+    分硬币思路：
     这确实也是个划分的问题，划分的计算是组合公式(C(m,n))：
     The number of ways to partition n using integers up to {biggest_proper_value:m} equal:
     the number of ways to partition n-m using integers up to m, and
@@ -214,7 +299,7 @@ def count_coins(change):
         line[1] = 1
 
     # 基本是和记忆化操作相关的wrapper
-    def rec(num, coin_limit=25):
+    def memo(num, coin_limit=25):
         if memory.get(coin_limit)[num] is None:
             # 计算累加
             memory.get(coin_limit)[num] = accumulate(num, floor(coin_limit, num))
@@ -228,54 +313,19 @@ def count_coins(change):
         else:
             return coin
 
-    # 真正计算递归的函数
-    # 依次调用rec()向下移动面值，累加不同面值选择的划分组合
-    # num: 当前处理的num
-    # coin: 在本次准备处理的面值
-    # count: 积累的累加
     def accumulate(num, coin, count=0):
+        """真正计算递归的函数
+        依次调用rec()向下移动面值，累加不同面值选择的划分组合
+        num: 当前处理的num
+        coin: 在本次准备处理的面值
+        count: 积累的累加
+        """
         if coin is None:
             return count
         else:
-            return accumulate(num, descending_coin(coin), count + rec(num - coin, coin))
+            return accumulate(num, descending_coin(coin), count + memo(num - coin, coin))
 
-    return rec(change)
-
-
-def print_move(origin, destination):
-    """Print instructions to move a disk."""
-    print("Move the top disk from rod", origin, "to rod", destination)
-
-
-def move_stack(n, start, end):
-    """Print the moves required to move n disks on the start pole to the end
-    pole without violating the rules of Towers of Hanoi.
-
-    n -- number of disks
-    start -- a pole position, either 1, 2, or 3
-    end -- a pole position, either 1, 2, or 3
-
-    There are exactly three poles, and start and end must be different. Assume
-    that the start pole has at least n disks of increasing size, and the end
-    pole is either empty or has a top disk larger than the top n start disks.
-
-    >>> move_stack(1, 1, 3)
-    Move the top disk from rod 1 to rod 3
-    >>> move_stack(2, 1, 3)
-    Move the top disk from rod 1 to rod 2
-    Move the top disk from rod 1 to rod 3
-    Move the top disk from rod 2 to rod 3
-    >>> move_stack(3, 1, 3)
-    Move the top disk from rod 1 to rod 3
-    Move the top disk from rod 1 to rod 2
-    Move the top disk from rod 3 to rod 2
-    Move the top disk from rod 1 to rod 3
-    Move the top disk from rod 2 to rod 1
-    Move the top disk from rod 2 to rod 3
-    Move the top disk from rod 1 to rod 3
-    """
-    assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
-    "*** YOUR CODE HERE ***"
+    return memo(change)
 
 
 def make_anonymous_factorial():
