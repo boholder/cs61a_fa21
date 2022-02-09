@@ -307,6 +307,7 @@ def count_coins(change):
         return memory.get(coin_limit)[num]
 
     # 把硬币面值降到目前num能接受的范围
+    # 这个函数帮忙省略了一些base case
     def floor(coin, num):
         if num < coin:
             return floor(descending_coin(coin), num)
