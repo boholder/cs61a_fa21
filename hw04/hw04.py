@@ -1,4 +1,5 @@
 from functools import reduce
+from random import random
 
 HW_SOURCE_FILE = __file__
 
@@ -340,9 +341,9 @@ def sub_interval(x, y):
 def div_interval(x, y):
     """Return the interval that contains the quotient of any value in x divided by
     any value in y. Division is implemented as the multiplication of x by the
-    reciprocal of y."""
-    到这了
-    "*** YOUR CODE HERE ***"
+    reciprocal of y.
+    """
+    assert upper_bound(y) != 0 and lower_bound(y) != 0, 'Cannot divide by 0'
     reciprocal_y = interval(1 / upper_bound(y), 1 / lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
@@ -360,7 +361,7 @@ def par2(r1, r2):
 
 def check_par():
     """Return two intervals that give different results for parallel resistors.
-
+    这题没做
     >>> r1, r2 = check_par()
     >>> x = par1(r1, r2)
     >>> y = par2(r1, r2)

@@ -16,6 +16,6 @@ python3() {
 }
 ```
 
-2. Set `builtin.AssertError` exception breakpoint on your IDE
-   ([for example on PyCharm](https://www.jetbrains.com/help/pycharm/using-breakpoints.html)), so you can easily debug by
-   adding assertion between your code. It's easier than finding a proper trigger condition for normal breakpoint.
+2. Set python exception breakpoint on your IDE
+   ([on PyCharm for example](https://www.jetbrains.com/help/pycharm/using-breakpoints.html)), so you can easily find out
+   where the code raise an exception. (`AssertionError`, `IndexError`, `TypeError`, etc.)
