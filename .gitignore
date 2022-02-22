@@ -1,0 +1,8 @@
+/cats/*
+!/cats/cats.py
+
+/hog/*
+!/hog/hog.py
+
+/ants/*
+!/ants/ants.py
