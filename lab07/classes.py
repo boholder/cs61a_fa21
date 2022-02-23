@@ -250,12 +250,10 @@ class InstructorCard(Card):
             card.attack += opponent_card.attack
             card.defense += opponent_card.defense
 
-        for i in range(orig_opponent_deck_length):
-            card = opponent.deck.cards[i]
-            if card.attack == opponent_card.attack and card.defense == opponent_card.defense:
-                opponent.deck.cards[i] = None
+        def _is_same_figure(card_a, card_b):
+            return card_a.attack == card_b.attack and card_a.defense == card_b.defense
 
-        opponent.deck.cards = [card for card in opponent.deck.cards if card is not None]
+        opponent.deck.cards = [card for card in opponent.deck.cards if not _is_same_figure(card, opponent_card)]
 
         # You should add your implementation above this.
         discarded = orig_opponent_deck_length - len(opponent.deck.cards)
